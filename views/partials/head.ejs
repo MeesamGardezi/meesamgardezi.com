@@ -1,0 +1,47 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Primary SEO -->
+<title><%= typeof title !== 'undefined' ? title : 'Meesam Gardezi — Flutter Developer • Full-Stack Engineer • SaaS Founder' %></title>
+<meta name="description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+<meta name="author" content="Meesam Gardezi">
+<meta name="robots" content="<%= typeof noIndex !== 'undefined' && noIndex ? 'noindex, nofollow' : 'index, follow' %>">
+<link rel="canonical" href="<%= currentUrl %>">
+
+<!-- Open Graph -->
+<meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+<meta property="og:title" content="<%= typeof title !== 'undefined' ? title : 'Meesam Gardezi — Portfolio & Blog' %>">
+<meta property="og:description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+<meta property="og:url" content="<%= currentUrl %>">
+<meta property="og:site_name" content="Meesam Gardezi">
+<% if (typeof ogImage !== 'undefined' && ogImage) { %>
+<meta property="og:image" content="<%= ogImage %>">
+<% } %>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : 'Meesam Gardezi — Portfolio & Blog' %>">
+<meta name="twitter:description" content="<%= typeof description !== 'undefined' ? description : siteDescription %>">
+<% if (typeof ogImage !== 'undefined' && ogImage) { %>
+<meta name="twitter:image" content="<%= ogImage %>">
+<% } %>
+
+<!-- Structured Data -->
+<% if (typeof structuredData !== 'undefined' && structuredData) { %>
+<script type="application/ld+json"><%- JSON.stringify(structuredData) %></script>
+<% } %>
+
+<!-- Fonts & Styles -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+
+<!-- Prevent flash of wrong theme -->
+<script>
+(function(){var t=localStorage.getItem('theme')||'light';document.documentElement.setAttribute('data-theme',t)})();
+</script>
+
+<% if (typeof extraCss !== 'undefined' && extraCss) { %>
+<link rel="stylesheet" href="<%= extraCss %>">
+<% } %>

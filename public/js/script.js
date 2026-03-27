@@ -1,4 +1,54 @@
 /* ═══════════════════════════════════════════
+   DARK MODE TOGGLE
+   Persists to localStorage, respects system preference
+   ═══════════════════════════════════════════ */
+function getPreferredTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return 'light';
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+
+    // Update particle canvas hint (for particle recolor)
+    const particleCanvas = document.getElementById('particleCanvas');
+    if (particleCanvas) {
+        particleCanvas.dataset.theme = theme;
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+// Apply theme immediately on load (before paint)
+applyTheme(getPreferredTheme());
+
+// Listen for system preference changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+    }
+});
+
+// Bind toggle button — defer scripts run after DOM is parsed, so it's already available
+(function bindToggle() {
+    const toggleBtn = document.getElementById('themeToggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleTheme);
+    } else {
+        // Fallback: if somehow called before DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('themeToggle');
+            if (btn) btn.addEventListener('click', toggleTheme);
+        });
+    }
+})();
+
+/* ═══════════════════════════════════════════
    THREE.JS 3D BACKGROUND — Floating Clay Shapes
    Full-screen ambient 3D scene with soft matte
    geometric objects drifting behind content
@@ -208,6 +258,7 @@ init3DBackground();
    PARTICLE SYSTEM
    ═══════════════════════════════════════════ */
 const particleCanvas = document.getElementById('particleCanvas');
+if (!particleCanvas) { console.warn('particleCanvas not found'); } else {
 const ctx = particleCanvas.getContext('2d');
 let particles = [];
 let mouse = { x: -1000, y: -1000 };
@@ -323,39 +374,40 @@ document.addEventListener('mouseleave', () => {
 resizeCanvas();
 createParticles();
 drawParticles();
+} // end particleCanvas else block
 
 /* ═══════════════════════════════════════════
    CURSOR GLOW
    ═══════════════════════════════════════════ */
 const glow = document.getElementById('cursorGlow');
-let glowVisible = false;
-let glowX = 0, glowY = 0, currentGlowX = 0, currentGlowY = 0;
+if (glow) {
+    let glowVisible = false;
+    let glowX = 0, glowY = 0, currentGlowX = 0, currentGlowY = 0;
 
-document.addEventListener('mousemove', (e) => {
-    glowX = e.clientX;
-    glowY = e.clientY;
-    if (!glowVisible) {
-        glow.style.opacity = '1';
-        glowVisible = true;
+    document.addEventListener('mousemove', (e) => {
+        glowX = e.clientX;
+        glowY = e.clientY;
+        if (!glowVisible) {
+            glow.style.opacity = '1';
+            glowVisible = true;
+        }
+    });
+
+    document.addEventListener('mouseleave', () => {
+        glow.style.opacity = '0';
+        glowVisible = false;
+    });
+
+    // Smooth glow follow
+    function updateGlow() {
+        currentGlowX += (glowX - currentGlowX) * 0.08;
+        currentGlowY += (glowY - currentGlowY) * 0.08;
+        glow.style.left = currentGlowX + 'px';
+        glow.style.top = currentGlowY + 'px';
+        requestAnimationFrame(updateGlow);
     }
-});
-
-document.addEventListener('mouseleave', () => {
-    glow.style.opacity = '0';
-    glowVisible = false;
-});
-
-// Smooth glow follow
-function updateGlow() {
-    currentGlowX += (glowX - currentGlowX) * 0.08;
-    currentGlowY += (glowY - currentGlowY) * 0.08;
-    glow.style.left = currentGlowX + 'px';
-    glow.style.top = currentGlowY + 'px';
-    requestAnimationFrame(updateGlow);
+    updateGlow();
 }
-updateGlow();
-
-/* Theme toggle removed — light mode only */
 
 /* ═══════════════════════════════════════════
    MOBILE NAV
@@ -393,6 +445,14 @@ function filterProjects(category, btn) {
     });
 }
 
+const projectsNav = document.querySelector('.projects-nav');
+if (projectsNav) {
+    projectsNav.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-filter]');
+        if (btn) filterProjects(btn.dataset.filter, btn);
+    });
+}
+
 /* ═══════════════════════════════════════════
    SCROLL REVEAL
    ═══════════════════════════════════════════ */
@@ -414,6 +474,7 @@ const counterObserver = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             entry.target.querySelectorAll('.stat-number').forEach(num => {
                 const target = parseInt(num.dataset.target);
+                if (isNaN(target)) return; // static text like "Many" — skip animation
                 const duration = 1800;
                 const start = performance.now();
 
@@ -493,8 +554,11 @@ let lastScroll = 0;
 window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
     const current = window.scrollY;
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     if (current > 100) {
-        nav.style.boxShadow = '10px 10px 20px rgba(0,0,0,0.1), -5px -5px 14px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(0,0,0,0.03), inset 0 2px 4px rgba(255,255,255,0.8)';
+        nav.style.boxShadow = isDark
+            ? '8px 8px 18px rgba(0,0,0,0.4), -4px -4px 12px rgba(255,255,255,0.03), inset 0 -2px 4px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.04)'
+            : '10px 10px 20px rgba(0,0,0,0.1), -5px -5px 14px rgba(255,255,255,0.95), inset 0 -2px 4px rgba(0,0,0,0.03), inset 0 2px 4px rgba(255,255,255,0.8)';
     } else {
         nav.style.boxShadow = '';
     }

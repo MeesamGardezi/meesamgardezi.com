@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Posts | Admin | Meesam Gardezi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <%- include('../partials/admin-nav', { activeNav: 'posts' }) %>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h1>Blog Posts</h1>
+                <p>Manage your blog content</p>
+            </div>
+            <a href="/admin/posts/new" class="btn-admin-primary">+ New Post</a>
+        </header>
+
+        <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Slug</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% posts.forEach(function(post) { %>
+                            <tr>
+                                <td><strong><%= post.title %></strong></td>
+                                <td><code><%= post.slug %></code></td>
+                                <td>
+                                    <span class="status-badge <%= post.published ? 'published' : 'draft' %>">
+                                        <%= post.published ? 'Published' : 'Draft' %>
+                                    </span>
+                                </td>
+                                <td><%= post.dateFormatted %></td>
+                                <td class="actions-cell">
+                                    <a href="/admin/posts/<%= post.id %>/edit" class="btn-admin-sm">Edit</a>
+                                    <% if (post.published) { %>
+                                        <a href="/blog/<%= post.slug %>" target="_blank" class="btn-admin-sm btn-admin-outline">View</a>
+                                    <% } %>
+                                    <button onclick="deletePost('<%= post.id %>', '<%= post.title %>')" class="btn-admin-sm btn-admin-danger">Delete</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="admin-empty">
+                <div class="admin-empty-icon">✍️</div>
+                <h3>No posts yet</h3>
+                <p>Start writing your first blog post.</p>
+                <a href="/admin/posts/new" class="btn-admin-primary">+ Create Post</a>
+            </div>
+        <% } %>
+    </main>
+
+    <script>
+        async function deletePost(id, title) {
+            if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+            try {
+                const res = await fetch(`/admin/posts/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.error || 'Failed to delete post');
+                }
+            } catch (err) {
+                alert('Error deleting post');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <%- include('partials/head') %>
+    <script src="/js/script.js" defer></script>
+</head>
+
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <%- include('partials/nav') %>
+
+    <section class="error-page">
+        <div class="reveal">
+            <h1>404</h1>
+            <p>The page you're looking for doesn't exist or has been moved.</p>
+            <div class="hero-cta" style="justify-content: center; margin-top: 32px;">
+                <a href="/" class="btn-primary magnetic" data-strength="20">
+                    <span>Go Home</span>
+                    <div class="btn-shine"></div>
+                </a>
+                <a href="/blog" class="btn-secondary magnetic" data-strength="20">
+                    <span>Read Blog</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+</body>
+
+</html>

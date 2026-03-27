@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= project ? 'Edit Project' : 'New Project' %> | Admin | Meesam Gardezi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <%- include('../partials/admin-nav', { activeNav: 'projects' }) %>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1><%= project ? 'Edit Project' : 'New Project' %></h1>
+            <p><a href="/admin/projects">← Back to Projects</a></p>
+        </header>
+
+        <div class="admin-section" style="max-width: 860px;">
+            <div id="saveStatus" class="save-status" style="display:none;"></div>
+
+            <form id="projectForm">
+                <!-- ── Core Info ── -->
+                <div class="form-group">
+                    <label class="form-label">Project Title <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="title" name="title" value="<%= project ? project.title : '' %>" placeholder="e.g. BuilderSolve" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-input" id="category" name="category">
+                            <option value="saas" <%= project && project.category === 'saas' ? 'selected' : '' %>>SaaS</option>
+                            <option value="client" <%= project && project.category === 'client' ? 'selected' : '' %>>Client Work</option>
+                            <option value="venture" <%= project && project.category === 'venture' ? 'selected' : '' %>>Past Venture</option>
+                            <option value="coming-soon" <%= project && project.category === 'coming-soon' ? 'selected' : '' %>>Coming Soon</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="status" name="status" onchange="syncStatusLabel(this.value)">
+                            <option value="live" <%= project && project.status === 'live' ? 'selected' : '' %>>Live</option>
+                            <option value="active" <%= project && project.status === 'active' ? 'selected' : '' %>>Active</option>
+                            <option value="discontinued" <%= project && project.status === 'discontinued' ? 'selected' : '' %>>Discontinued / Sunset</option>
+                            <option value="coming-soon" <%= project && project.status === 'coming-soon' ? 'selected' : '' %>>Coming Soon</option>
+                            <option value="in-dev" <%= project && project.status === 'in-dev' ? 'selected' : '' %>>In Development</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status Label (displayed)</label>
+                        <input type="text" class="form-input" id="statusLabel" name="statusLabel" value="<%= project ? project.statusLabel : '● Live' %>" placeholder="e.g. ● Live, Sunset, ● Active">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Type / Subtitle</label>
+                    <input type="text" class="form-input" id="projectType" name="projectType" value="<%= project ? project.projectType : '' %>" placeholder="e.g. Live SaaS • Solo Build • Self-Owned">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" id="description" name="description" rows="4" placeholder="Brief description of the project…"><%= project ? project.description : '' %></textarea>
+                </div>
+
+                <!-- ── Tech Stack ── -->
+                <div class="form-group">
+                    <label class="form-label">Tech Stack <span class="form-hint">(comma-separated)</span></label>
+                    <input type="text" class="form-input" id="stack" name="stack" value="<%= project ? project.stack : '' %>" placeholder="Flutter, Firebase, Node.js, VPS">
+                </div>
+
+                <!-- ── Links ── -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Live Link</label>
+                        <input type="url" class="form-input" id="liveLink" name="liveLink" value="<%= project ? project.liveLink : '' %>" placeholder="https://myproject.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitHub Link</label>
+                        <input type="url" class="form-input" id="githubLink" name="githubLink" value="<%= project ? project.githubLink : '' %>" placeholder="https://github.com/...">
+                    </div>
+                </div>
+
+                <!-- ── Image ── -->
+                <div class="form-group">
+                    <label class="form-label">Image URL <span class="form-hint">(direct image link, e.g. from Imgur, Firebase Storage, CDN)</span></label>
+                    <input type="url" class="form-input" id="imageUrl" name="imageUrl" value="<%= project ? project.imageUrl : '' %>" placeholder="https://..." oninput="previewImage(this.value)">
+                    <div id="imgPreview" style="margin-top: 12px; display: none;">
+                        <img id="imgPreviewEl" src="" alt="Preview" style="max-width: 320px; max-height: 200px; border-radius: 10px; border: 1px solid var(--admin-border); object-fit: cover;">
+                    </div>
+                </div>
+
+                <!-- ── Metrics ── -->
+                <div class="form-group">
+                    <label class="form-label">Metrics <span class="form-hint">(optional stat cards shown on the project card)</span></label>
+                    <div id="metricsContainer">
+                        <% if (project && project.metrics && project.metrics.length > 0) { %>
+                            <% project.metrics.forEach(function(m) { %>
+                                <div class="metric-row">
+                                    <input type="text" class="form-input" name="metricsValues" value="<%= m.value %>" placeholder="Value (e.g. 1,000+)">
+                                    <input type="text" class="form-input" name="metricsLabels" value="<%= m.label %>" placeholder="Label (e.g. Users)">
+                                    <button type="button" class="btn-admin-sm btn-danger" onclick="removeMetric(this)">✕</button>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn-admin-sm" onclick="addMetric()" style="margin-top: 8px;">+ Add Metric</button>
+                </div>
+
+                <!-- ── Settings ── -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Display Order <span class="form-hint">(lower = first)</span></label>
+                        <input type="number" class="form-input" id="order" name="order" value="<%= project ? project.order : 0 %>" min="0">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end; padding-bottom: 2px;">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" id="published" name="published" value="true" <%= !project || project.published ? 'checked' : '' %>>
+                            <span>Show on homepage</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-admin-primary" id="saveBtn">
+                        <%= project ? 'Save Changes' : 'Create Project' %>
+                    </button>
+                    <a href="/admin/projects" class="btn-admin-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div id="editorMeta"
+        data-project-id="<%= project ? project.id : '' %>"
+        data-image-url="<%= project && project.imageUrl ? project.imageUrl : '' %>"
+        style="display:none;"
+    ></div>
+
+    <script>
+    const _meta = document.getElementById('editorMeta').dataset;
+    const projectId = _meta.projectId || '';
+
+    function syncStatusLabel(val) {
+        const labels = { live: '● Live', active: '● Active', discontinued: 'Sunset', 'coming-soon': 'Coming Soon', 'in-dev': '● In Dev' };
+        const el = document.getElementById('statusLabel');
+        if (!el.dataset.userEdited) el.value = labels[val] || '● Live';
+    }
+    document.getElementById('statusLabel').addEventListener('input', function() {
+        this.dataset.userEdited = '1';
+    });
+
+    function previewImage(url) {
+        const wrap = document.getElementById('imgPreview');
+        const img = document.getElementById('imgPreviewEl');
+        if (url) { img.src = url; wrap.style.display = 'block'; }
+        else { wrap.style.display = 'none'; }
+    }
+    if (_meta.imageUrl) previewImage(_meta.imageUrl);
+
+    function addMetric() {
+        const container = document.getElementById('metricsContainer');
+        const row = document.createElement('div');
+        row.className = 'metric-row';
+        row.innerHTML = `
+            <input type="text" class="form-input" name="metricsValues" placeholder="Value (e.g. 1,000+)">
+            <input type="text" class="form-input" name="metricsLabels" placeholder="Label (e.g. Users)">
+            <button type="button" class="btn-admin-sm btn-danger" onclick="removeMetric(this)">✕</button>
+        `;
+        container.appendChild(row);
+    }
+
+    function removeMetric(btn) {
+        btn.closest('.metric-row').remove();
+    }
+
+    function collectFormData() {
+        const metricsValues = [...document.querySelectorAll('[name="metricsValues"]')].map(i => i.value);
+        const metricsLabels = [...document.querySelectorAll('[name="metricsLabels"]')].map(i => i.value);
+        return {
+            title: document.getElementById('title').value.trim(),
+            category: document.getElementById('category').value,
+            status: document.getElementById('status').value,
+            statusLabel: document.getElementById('statusLabel').value.trim(),
+            projectType: document.getElementById('projectType').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            stack: document.getElementById('stack').value.trim(),
+            liveLink: document.getElementById('liveLink').value.trim(),
+            githubLink: document.getElementById('githubLink').value.trim(),
+            imageUrl: document.getElementById('imageUrl').value.trim(),
+            order: document.getElementById('order').value,
+            published: document.getElementById('published').checked ? 'true' : 'false',
+            metricsValues,
+            metricsLabels,
+        };
+    }
+
+    document.getElementById('projectForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('saveBtn');
+        const status = document.getElementById('saveStatus');
+        btn.disabled = true; btn.textContent = 'Saving…';
+
+        const body = collectFormData();
+        const url = projectId ? `/admin/projects/${projectId}` : '/admin/projects';
+        const method = projectId ? 'PUT' : 'POST';
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (data.success) {
+                status.className = 'save-status success';
+                status.textContent = projectId ? 'Project updated!' : 'Project created!';
+                status.style.display = 'block';
+                if (!projectId) setTimeout(() => window.location = '/admin/projects', 800);
+            } else {
+                status.className = 'save-status error';
+                status.textContent = data.error || 'Save failed.';
+                status.style.display = 'block';
+            }
+        } catch (err) {
+            status.className = 'save-status error';
+            status.textContent = 'Network error. Please try again.';
+            status.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.textContent = projectId ? 'Save Changes' : 'Create Project';
+        }
+    });
+    </script>
+</body>
+</html>

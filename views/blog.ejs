@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/blog.css">
+    <script src="/js/script.js" defer></script>
+</head>
+
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <%- include('partials/nav') %>
+
+    <section class="blog-hero" id="hero">
+        <div class="reveal">
+            <div class="section-label">Blog</div>
+            <h1 class="section-title">Thoughts, <em>Lessons</em> & Builds</h1>
+            <p class="section-desc">Writing about Flutter, full-stack development, SaaS building, AI, and the chaos of shipping products solo.</p>
+        </div>
+    </section>
+
+    <section class="blog-list">
+        <% if (posts && posts.length > 0) { %>
+            <div class="blog-grid">
+                <% posts.forEach(function(post) { %>
+                    <article class="blog-card reveal tilt-card">
+                        <a href="/blog/<%= post.slug %>" class="blog-card-link">
+                            <% if (post.coverImage) { %>
+                                <div class="blog-card-image">
+                                    <img src="<%= post.coverImage %>" alt="<%= post.title %>" loading="lazy">
+                                </div>
+                            <% } %>
+                            <div class="blog-card-body">
+                                <div class="blog-card-meta">
+                                    <time datetime="<%= post.dateISO %>"><%= post.dateFormatted %></time>
+                                    <% if (post.readTime) { %>
+                                        <span class="read-time"><%= post.readTime %> min read</span>
+                                    <% } %>
+                                </div>
+                                <h2><%= post.title %></h2>
+                                <p><%= post.excerpt %></p>
+                                <% if (post.tags && post.tags.length > 0) { %>
+                                    <div class="blog-tags">
+                                        <% post.tags.forEach(function(tag) { %>
+                                            <span><%= tag %></span>
+                                        <% }) %>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </a>
+                    </article>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="blog-empty reveal">
+                <div class="cs-icon">✍️</div>
+                <h3>No posts yet</h3>
+                <p>Blog posts are coming soon. Stay tuned!</p>
+            </div>
+        <% } %>
+    </section>
+
+    <%- include('partials/footer') %>
+
+</body>
+
+</html>

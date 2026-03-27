@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages | Admin | Meesam Gardezi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <%- include('../partials/admin-nav', { activeNav: 'messages' }) %>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>Messages</h1>
+            <p>Contact form submissions</p>
+        </header>
+
+        <% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+            <div class="messages-list">
+                <% messages.forEach(function(msg) { %>
+                    <div class="message-card <%= msg.read ? '' : 'unread' %>">
+                        <div class="message-header">
+                            <div class="message-sender">
+                                <strong><%= msg.name %></strong>
+                                <span><%= msg.email %></span>
+                            </div>
+                            <time><%= msg.dateFormatted %></time>
+                        </div>
+                        <% if (msg.subject) { %>
+                            <div class="message-subject"><%= msg.subject %></div>
+                        <% } %>
+                        <div class="message-body"><%= msg.message %></div>
+                        <div class="message-actions">
+                            <a href="mailto:<%= msg.email %>" class="btn-admin-sm">Reply</a>
+                            <% if (!msg.read) { %>
+                                <button onclick="markRead('<%= msg.id %>')" class="btn-admin-sm btn-admin-outline">Mark Read</button>
+                            <% } %>
+                            <button onclick="deleteMessage('<%= msg.id %>')" class="btn-admin-sm btn-admin-danger">Delete</button>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="admin-empty">
+                <div class="admin-empty-icon">💬</div>
+                <h3>No messages</h3>
+                <p>Contact form submissions will appear here.</p>
+            </div>
+        <% } %>
+    </main>
+
+    <script>
+        async function markRead(id) {
+            try {
+                const res = await fetch(`/admin/messages/${id}/read`, { method: 'PUT' });
+                if (res.ok) window.location.reload();
+            } catch (err) {
+                alert('Error updating message');
+            }
+        }
+
+        async function deleteMessage(id) {
+            if (!confirm('Delete this message?')) return;
+            try {
+                const res = await fetch(`/admin/messages/${id}`, { method: 'DELETE' });
+                if (res.ok) window.location.reload();
+            } catch (err) {
+                alert('Error deleting message');
+            }
+        }
+    </script>
+</body>
+</html>

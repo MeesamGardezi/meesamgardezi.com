@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="/css/blog.css">
+    <script src="/js/script.js" defer></script>
+</head>
+
+<body>
+
+    <canvas id="particleCanvas"></canvas>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <%- include('partials/nav') %>
+
+    <article class="blog-post-page">
+        <header class="blog-post-header reveal">
+            <a href="/blog" class="back-link">&larr; Back to Blog</a>
+            <div class="blog-post-meta">
+                <time datetime="<%= post.dateISO %>"><%= post.dateFormatted %></time>
+                <% if (post.readTime) { %>
+                    <span class="read-time"><%= post.readTime %> min read</span>
+                <% } %>
+            </div>
+            <h1><%= post.title %></h1>
+            <% if (post.excerpt) { %>
+                <p class="blog-post-excerpt"><%= post.excerpt %></p>
+            <% } %>
+            <% if (post.tags && post.tags.length > 0) { %>
+                <div class="blog-tags">
+                    <% post.tags.forEach(function(tag) { %>
+                        <span><%= tag %></span>
+                    <% }) %>
+                </div>
+            <% } %>
+        </header>
+
+        <% if (post.coverImage) { %>
+            <div class="blog-post-cover reveal">
+                <img src="<%= post.coverImage %>" alt="<%= post.title %>" loading="lazy">
+            </div>
+        <% } %>
+
+        <div class="blog-post-content reveal">
+            <%- post.contentHtml %>
+        </div>
+
+        <footer class="blog-post-footer reveal">
+            <div class="blog-post-author">
+                <strong>Meesam Gardezi</strong>
+                <span>Flutter Developer • Full-Stack Engineer • SaaS Founder</span>
+            </div>
+            <a href="/blog" class="btn-secondary magnetic" data-strength="12">
+                <span>&larr; More Posts</span>
+            </a>
+        </footer>
+    </article>
+
+    <%- include('partials/footer') %>
+
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Admin | Meesam Gardezi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <%- include('../partials/admin-nav', { activeNav: 'dashboard' }) %>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>Dashboard</h1>
+            <p>Welcome back, <%= user.email %></p>
+        </header>
+
+        <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📝</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number"><%= typeof stats !== 'undefined' ? stats.totalPosts : 0 %></span>
+                    <span class="admin-stat-label">Total Posts</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">✅</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number"><%= typeof stats !== 'undefined' ? stats.publishedPosts : 0 %></span>
+                    <span class="admin-stat-label">Published</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">📋</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number"><%= typeof stats !== 'undefined' ? stats.draftPosts : 0 %></span>
+                    <span class="admin-stat-label">Drafts</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">💬</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number"><%= typeof stats !== 'undefined' ? stats.totalMessages : 0 %></span>
+                    <span class="admin-stat-label">Messages</span>
+                </div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="admin-stat-icon">🚀</div>
+                <div class="admin-stat-info">
+                    <span class="admin-stat-number"><%= typeof stats !== 'undefined' ? (stats.totalProjects || 0) : 0 %></span>
+                    <span class="admin-stat-label">Projects</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <div class="admin-section-header">
+                <h2>Recent Posts</h2>
+                <a href="/admin/posts/new" class="btn-admin-primary btn-sm">+ New Post</a>
+            </div>
+            <% if (typeof recentPosts !== 'undefined' && recentPosts.length > 0) { %>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentPosts.forEach(function(post) { %>
+                                <tr>
+                                    <td><strong><%= post.title %></strong></td>
+                                    <td>
+                                        <span class="status-badge <%= post.published ? 'published' : 'draft' %>">
+                                            <%= post.published ? 'Published' : 'Draft' %>
+                                        </span>
+                                    </td>
+                                    <td><%= post.dateFormatted %></td>
+                                    <td>
+                                        <a href="/admin/posts/<%= post.id %>/edit" class="btn-admin-sm">Edit</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="admin-empty">
+                    <p>No posts yet. <a href="/admin/posts/new">Create your first post</a></p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+</body>
+</html>

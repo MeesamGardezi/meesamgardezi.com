@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | Admin | Meesam Gardezi</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+    <%- include('../partials/admin-nav', { activeNav: 'projects' }) %>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <h1>Projects</h1>
+            <p>Manage portfolio projects shown on the homepage.</p>
+        </header>
+
+        <div class="admin-section">
+            <div class="admin-section-header">
+                <h2>All Projects</h2>
+                <a href="/admin/projects/new" class="btn-admin-primary btn-sm">+ New Project</a>
+            </div>
+
+            <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Visibility</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <% projects.forEach(function(project) { %>
+                            <tr>
+                                <td><strong><%= project.title %></strong></td>
+                                <td><span class="tag-pill"><%= project.category %></span></td>
+                                <td><%= project.statusLabel %></td>
+                                <td>
+                                    <span class="status-badge <%= project.published ? 'published' : 'draft' %>">
+                                        <%= project.published ? 'Visible' : 'Hidden' %>
+                                    </span>
+                                </td>
+                                <td class="admin-table-actions">
+                                    <a href="/admin/projects/<%= project.id %>/edit" class="btn-admin-sm">Edit</a>
+                                    <button class="btn-admin-sm btn-danger" data-id="<%= project.id %>" data-title="<%= project.title.replace(/"/g, '&quot;') %>" onclick="deleteProject(this)">Delete</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="admin-empty">
+                    <p>No projects yet. <a href="/admin/projects/new">Add your first project</a></p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <script>
+    async function deleteProject(btn) {
+        const id = btn.dataset.id;
+        const title = btn.dataset.title;
+        if (!confirm(`Delete project "${title}"? This cannot be undone.`)) return;
+        try {
+            const res = await fetch(`/admin/projects/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.error || 'Failed to delete project.');
+            }
+        } catch (err) {
+            alert('An error occurred. Please try again.');
+        }
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- ══════════════════ NAVIGATION ══════════════════ -->
+<nav>
+    <div class="nav-logo" onclick="scrollToSection('hero')">
+        <a href="/" style="color: inherit; text-decoration: none;">meesam<span class="nav-dot">.</span></a>
+    </div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="/#about" onclick="closeNav()">About</a></li>
+        <li><a href="/#skills" onclick="closeNav()">Skills</a></li>
+        <li><a href="/#projects" onclick="closeNav()">Projects</a></li>
+        <li><a href="/#education" onclick="closeNav()">Education</a></li>
+        <li><a href="/blog" onclick="closeNav()">Blog</a></li>
+        <li><a href="/#contact" onclick="closeNav()">Contact</a></li>
+    </ul>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <span class="icon-moon">🌙</span>
+            <span class="icon-sun">☀️</span>
+        </button>
+        <button class="nav-hamburger" id="hamburger" onclick="toggleNav()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
