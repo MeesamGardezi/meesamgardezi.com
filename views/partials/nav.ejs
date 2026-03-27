@@ -1,0 +1,47 @@
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav__container">
+    <a href="/" class="nav__logo" aria-label="Meesam Gardezi — home">
+      <span class="nav__logo-text">meesam<span class="nav__logo-dot">.</span></span>
+      <span class="nav__logo-tag">builder</span>
+    </a>
+
+    <ul class="nav__links" role="list">
+      <li><a href="/" class="nav__link <%= page === 'home' ? 'nav__link--active' : '' %>">home</a></li>
+      <li><a href="/projects" class="nav__link <%= page === 'projects' ? 'nav__link--active' : '' %>">projects</a></li>
+      <li><a href="/blog" class="nav__link <%= page === 'blog' ? 'nav__link--active' : '' %>">blog</a></li>
+      <li><a href="/#contact" class="nav__link">contact</a></li>
+    </ul>
+
+    <div class="nav__actions">
+      <button class="nav__theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <% if (isAdmin) { %>
+        <a href="/admin" class="nav__admin-badge">⚡ admin</a>
+      <% } %>
+
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="nav__mobile" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <ul role="list">
+      <li><a href="/" class="<%= page === 'home' ? 'active' : '' %>">home</a></li>
+      <li><a href="/projects" class="<%= page === 'projects' ? 'active' : '' %>">projects</a></li>
+      <li><a href="/blog" class="<%= page === 'blog' ? 'active' : '' %>">blog</a></li>
+      <li><a href="/#contact">contact</a></li>
+    </ul>
+  </div>
+</nav>
