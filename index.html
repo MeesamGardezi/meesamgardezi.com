@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meesam Gardezi — Flutter Developer • Full-Stack Engineer • SaaS Founder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Particle canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Cursor glow -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- ══════════════════ NAVIGATION ══════════════════ -->
+    <nav>
+        <div class="nav-logo" onclick="scrollToSection('hero')">meesam<span>.</span></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about" onclick="closeNav()">About</a></li>
+            <li><a href="#skills" onclick="closeNav()">Skills</a></li>
+            <li><a href="#projects" onclick="closeNav()">Projects</a></li>
+            <li><a href="#education" onclick="closeNav()">Education</a></li>
+            <li><a href="#contact" onclick="closeNav()">Contact</a></li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg id="sunIcon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg id="moonIcon" class="theme-icon" style="display:none;" xmlns="http://www.w3.org/2000/svg"
+                    width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+            <button class="nav-hamburger" id="hamburger" onclick="toggleNav()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ══════════════════ HERO ══════════════════ -->
+    <section class="hero" id="hero">
+        <div class="hero-badge">
+            <span class="pulse"></span>
+            Available for work — worldwide
+        </div>
+        <div class="hero-tagline">I make your <em>dreams</em> come true</div>
+        <h1 class="hero-title">
+            <span class="char-wrap"><span class="char-line">Meesam</span></span>
+            <span class="char-wrap"><span class="char-line italic">Gardezi</span></span>
+        </h1>
+        <p class="hero-subtitle">
+            Flutter developer, full-stack engineer, and SaaS founder with 5+ years shipping real products. Two live
+            platforms. 1,500+ users. Built from scratch — solo.
+        </p>
+        <div class="hero-cta">
+            <a href="#projects" class="btn-primary magnetic" data-strength="20">
+                <span>View Projects</span>
+                <div class="btn-shine"></div>
+            </a>
+            <a href="#contact" class="btn-secondary magnetic" data-strength="20">
+                <span>Get in Touch</span>
+            </a>
+            <a href="Meesam_Gardezi_CV.pdf" download class="btn-tertiary magnetic" data-strength="20">
+                <span>Download CV</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </a>
+        </div>
+        <div class="hero-scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- ══════════════════ MARQUEE ══════════════════ -->
+    <div class="marquee-section">
+        <div class="marquee-track">
+            <span>Flutter & Dart</span><span>Firebase</span><span>Node.js</span><span>SaaS Builder</span><span>AI /
+                LLM</span><span>Full-Stack</span><span>Cross-Platform</span><span>VPS & Infra</span><span>Real-Time
+                Systems</span><span>Stripe Payments</span>
+            <span>Flutter & Dart</span><span>Firebase</span><span>Node.js</span><span>SaaS Builder</span><span>AI /
+                LLM</span><span>Full-Stack</span><span>Cross-Platform</span><span>VPS & Infra</span><span>Real-Time
+                Systems</span><span>Stripe Payments</span>
+        </div>
+    </div>
+
+    <!-- ══════════════════ STATS ══════════════════ -->
+    <div class="stats reveal">
+        <div class="stat-item">
+            <div class="stat-number" data-target="5">0</div>
+            <div class="stat-suffix">+</div>
+            <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="1500">0</div>
+            <div class="stat-suffix">+</div>
+            <div class="stat-label">Users Reached</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="2">0</div>
+            <div class="stat-suffix"></div>
+            <div class="stat-label">Live SaaS Personal Products</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" data-target="4">0</div>
+            <div class="stat-suffix">+</div>
+            <div class="stat-label">Shipped Products</div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ ABOUT ══════════════════ -->
+    <section id="about">
+        <div class="about-content reveal">
+            <div class="section-label">About</div>
+            <h2 class="section-title">Obsessively building.<br>Shipping since <em>always.</em></h2>
+            <p>
+                I'm a <strong>self-taught software engineer</strong> from Pakistan building digital products from
+                the
+                ground up. At 20, I've solo-built two live SaaS platforms, shipped consumer apps to 1,500+ users,
+                and
+                delivered AI-powered production systems for international clients.
+            </p>
+            <p>
+                I specialise in <strong>Flutter and full-stack engineering</strong>, handling everything from
+                architecture and cross-platform frontend to backend APIs, VPS infrastructure, DNS, SSL, email
+                systems,
+                and deployment. Zero reliance on others — full product lifecycle, every single time.
+            </p>
+            <p>
+            </p>
+        </div>
+        <div class="about-highlights reveal">
+            <div class="highlight-card tilt-card">
+                <div class="icon">🏗️</div>
+                <h4>Full-Stack Independence</h4>
+                <p>VPS, DNS, SSL, Deployment, email — I handle it all</p>
+            </div>
+            <div class="highlight-card tilt-card">
+                <div class="icon">🤖</div>
+                <h4>AI/LLM Builder</h4>
+                <p>RAG systems, contract agents, OpenAI & Gemini</p>
+            </div>
+            <div class="highlight-card tilt-card">
+                <div class="icon">🚀</div>
+                <h4>Proven Traction</h4>
+                <p>1,500+ users across personal ventures</p>
+            </div>
+            <div class="highlight-card tilt-card">
+                <div class="icon">🌍</div>
+                <h4>International Clients</h4>
+                <p>Delivering production systems worldwide</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════ SKILLS ══════════════════ -->
+    <section id="skills">
+        <div class="reveal">
+            <div class="section-label">Technical Arsenal</div>
+            <h2 class="section-title">Skills & <em>Technologies</em></h2>
+            <p class="section-desc">Expert-level Flutter development backed by a full-stack toolkit — from mobile to
+                server to AI.</p>
+        </div>
+        <div class="skills-grid">
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">📱</span> Flutter & Dart</h3>
+                <div class="skill-tags">
+                    <span>Cross-Platform</span><span>GoRouter</span><span>Custom
+                        Painter</span><span>Animations</span><span>Platform Channels</span><span>Stripe</span><span>PDF
+                        Gen</span><span>Isolates</span><span>Deep Linking</span><span>App/Play Store</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🔥</span> Firebase</h3>
+                <div class="skill-tags">
+                    <span>Auth</span><span>Firestore</span><span>Cloud
+                        Functions</span><span>FCM</span><span>Storage</span><span>Real-time Listeners</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">⚙️</span> Backend</h3>
+                <div class="skill-tags">
+                    <span>Node.js</span><span>Express.js</span><span>REST APIs</span><span>WebSockets</span><span>Cron
+                        Jobs</span><span>Email Integration</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🧠</span> AI / LLM</h3>
+                <div class="skill-tags">
+                    <span>OpenAI API</span><span>Gemini API</span><span>RAG Systems</span><span>Contract Analysis</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🛡️</span> Security & Auth</h3>
+                <div class="skill-tags">
+                    <span>JWT</span><span>OAuth</span><span>API Keys</span><span>Phone
+                        Auth</span><span>Email/Password</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🏗️</span> Infrastructure</h3>
+                <div class="skill-tags">
+                    <span>VPS</span><span>cPanel/WHM</span><span>DNS</span><span>SSL</span><span>Cloudflare
+                        R2</span><span>iRedMail</span><span>SMTP/IMAP</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🗄️</span> Databases</h3>
+                <div class="skill-tags">
+                    <span>Firestore</span><span>PostgreSQL</span><span>SQLite</span><span>Shared Prefs</span>
+                </div>
+            </div>
+            <div class="skill-card reveal tilt-card">
+                <h3><span class="skill-icon">🔤</span> Languages</h3>
+                <div class="skill-tags">
+                    <span>Dart
+                        (Expert)</span><span>JavaScript</span><span>Python</span><span>SQL</span><span>HTML/CSS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════ PROJECTS ══════════════════ -->
+    <section id="projects">
+        <div class="reveal">
+            <div class="section-label">Work</div>
+            <h2 class="section-title">Projects & <em>Products</em></h2>
+            <p class="section-desc">From SaaS platforms serving real users to AI agents in production — here's what I've
+                built.</p>
+        </div>
+        <div class="projects-nav reveal">
+            <button class="active" onclick="filterProjects('all', this)">All</button>
+            <button onclick="filterProjects('saas', this)">SaaS</button>
+            <button onclick="filterProjects('client', this)">Client Work</button>
+            <button onclick="filterProjects('venture', this)">Past Ventures</button>
+            <button onclick="filterProjects('coming-soon', this)">Coming Soon</button>
+        </div>
+        <div class="projects-grid" id="projectsGrid">
+
+            <!-- BuilderSolve -->
+            <div class="project-card reveal tilt-card" data-category="saas">
+                <div class="project-card-header">
+                    <div class="project-status live">● Live</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>BuilderSolve</h3>
+                    <div class="project-type">Live SaaS • Solo Build • Self-Owned</div>
+                    <p>Construction project management platform competing with Buildertrend. Full product lifecycle —
+                        mobile, web, backend, hosting, deployment. Includes a custom AI RAG system powered by Gemini for
+                        natural language queries on company data.</p>
+                    <div class="project-stack">
+                        <span>Flutter</span><span>Firebase</span><span>Node.js</span><span>VPS</span><span>Gemini
+                            API</span><span>RAG</span>
+                    </div>
+                    <div class="project-metrics">
+                        <div class="metric"><span class="metric-value">Mobile + Web</span><span
+                                class="metric-label">Platforms</span></div>
+                        <div class="metric"><span class="metric-value">AI-Powered</span><span class="metric-label">RAG
+                                System</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- URBox.ai -->
+            <div class="project-card reveal tilt-card" data-category="saas">
+                <div class="project-card-header">
+                    <div class="project-status live">● Live</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>URBox.ai</h3>
+                    <div class="project-type">Live SaaS • Solo Build • Self-Owned</div>
+                    <p>Shared inbox and team email management platform, competing with Front. Flutter web frontend,
+                        Node.js backend with full email system integration, Firebase for real-time data — all
+                        self-hosted on VPS.</p>
+                    <div class="project-stack">
+                        <span>Flutter
+                            Web</span><span>Node.js</span><span>Firebase</span><span>VPS</span><span>SMTP/IMAP</span>
+                    </div>
+                    <div class="project-metrics">
+                        <div class="metric"><span class="metric-value">Web App</span><span
+                                class="metric-label">Platform</span></div>
+                        <div class="metric"><span class="metric-value">Real-time</span><span class="metric-label">Email
+                                Sync</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Contract Agent -->
+            <div class="project-card reveal tilt-card" data-category="client">
+                <div class="project-card-header">
+                    <div class="project-status active">● Active</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>AI Contract Redlining Agent</h3>
+                    <div class="project-type">Client Work • Production System</div>
+                    <p>AI-powered agent for automated contract redlining — analyses legal documents, identifies risk
+                        clauses, and suggests revisions. Delivered as a production system, still actively in use by the
+                        client.</p>
+                    <div class="project-stack">
+                        <span>AI/LLM</span><span>Node.js</span><span>NLP</span>
+                    </div>
+                    <div class="project-metrics">
+                        <div class="metric"><span class="metric-value">Production</span><span
+                                class="metric-label">Status</span></div>
+                        <div class="metric"><span class="metric-value">Legal Tech</span><span
+                                class="metric-label">Domain</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Landing Pages -->
+            <div class="project-card reveal tilt-card" data-category="client">
+                <div class="project-card-header">
+                    <div class="project-status live">● Live</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>Client Landing Pages + Admin Panels</h3>
+                    <div class="project-type">Client Work • ×2 Projects</div>
+                    <p>Full landing pages with comprehensive admin panels. Integrated custom mailing systems for clients
+                        to send and receive emails directly via SMTP/IMAP. End-to-end delivery.</p>
+                    <div class="project-stack">
+                        <span>HTML/CSS</span><span>Node.js</span><span>SMTP/IMAP</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Influencer Website -->
+            <div class="project-card reveal tilt-card" data-category="client">
+                <div class="project-card-header">
+                    <div class="project-status active">● In Dev</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>Influencer Website & Merch Store</h3>
+                    <div class="project-type">Client Work • In Development</div>
+                    <p>Custom website with blog and merchandise store for a prominent Pakistani influencer. Static build
+                        with Firebase Storage powering the blog section.</p>
+                    <div class="project-stack">
+                        <span>HTML/CSS</span><span>Firebase Storage</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BeFoods -->
+            <div class="project-card reveal tilt-card" data-category="venture">
+                <div class="project-card-header">
+                    <div class="project-status discontinued">Sunset</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>BeFoods</h3>
+                    <div class="project-type">Personal Venture • 1,000+ Users</div>
+                    <p>Food delivery platform modelled after UberEats/Foodpanda. Solo-built mobile app that grew
+                        organically to over 1,000 users before being sunset.</p>
+                    <div class="project-stack">
+                        <span>Flutter</span><span>Firebase</span>
+                    </div>
+                    <div class="project-metrics">
+                        <div class="metric"><span class="metric-value">1,000+</span><span
+                                class="metric-label">Users</span></div>
+                        <div class="metric"><span class="metric-value">Organic</span><span
+                                class="metric-label">Growth</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bizzko -->
+            <div class="project-card reveal tilt-card" data-category="venture">
+                <div class="project-card-header">
+                    <div class="project-status discontinued">Sunset</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>Bizzko</h3>
+                    <div class="project-type">Personal Venture • ~500 Users</div>
+                    <p>Full e-commerce platform built solo. Reached ~500 users with complete product listing, ordering,
+                        and payment flows.</p>
+                    <div class="project-stack">
+                        <span>Flutter</span><span>Firebase</span>
+                    </div>
+                    <div class="project-metrics">
+                        <div class="metric"><span class="metric-value">~500</span><span
+                                class="metric-label">Users</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Platform -->
+            <div class="project-card reveal tilt-card" data-category="venture">
+                <div class="project-card-header">
+                    <div class="project-status discontinued">Learning</div>
+                </div>
+                <div class="project-card-body">
+                    <h3>Video Sharing Platform</h3>
+                    <div class="project-type">Learning Project • Solo Build</div>
+                    <p>YouTube-style video sharing platform — uploads, feeds, profiles, engagement. Deep-dive into
+                        Firebase and media-heavy architecture.</p>
+                    <div class="project-stack">
+                        <span>Flutter</span><span>Firebase Storage</span><span>Firestore</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coming Soon -->
+            <div class="project-card coming-soon-card reveal" data-category="coming-soon">
+                <div class="coming-soon-content">
+                    <div class="cs-icon">🚧</div>
+                    <h3>Something Big</h3>
+                    <p>New projects are always in the pipeline.<br>Stay tuned.</p>
+                </div>
+            </div>
+
+            <div class="project-card coming-soon-card reveal" data-category="coming-soon">
+                <div class="coming-soon-content">
+                    <div class="cs-icon">✦</div>
+                    <h3>Coming Soon</h3>
+                    <p>The next product is being built.<br>Watch this space.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ══════════════════ EDUCATION ══════════════════ -->
+    <section id="education">
+        <div class="reveal">
+            <div class="section-label">Education</div>
+            <h2 class="section-title">Learning & <em>Grades</em></h2>
+        </div>
+        <div class="edu-grid">
+            <div class="edu-card reveal tilt-card">
+                <div class="edu-icon">📚</div>
+                <h3>A-Levels</h3>
+                <p>2A* 1A — Completed</p>
+                <span class="edu-tag">2A* 1A</span>
+            </div>
+            <div class="edu-card reveal tilt-card">
+                <div class="edu-icon">📝</div>
+                <h3>O-Levels</h3>
+                <p>6A* 1A — Completed</p>
+                <span class="edu-tag">6A* 1A</span>
+            </div>
+            <div class="edu-card reveal tilt-card">
+                <div class="edu-icon">🎯</div>
+                <h3>SAT</h3>
+                <p>Scored 1510 out of 1600</p>
+                <span class="edu-tag">1510</span>
+            </div>
+            <div class="edu-card reveal tilt-card">
+                <div class="edu-icon">💻</div>
+                <h3>Self-Taught Developer</h3>
+                <p>Over half a decade of independent development. Shipped real products, served real users.</p>
+                <span class="edu-tag">5+ Years</span>
+            </div>
+            <div class="edu-card reveal tilt-card">
+                <div class="edu-icon">🧠</div>
+                <h3>Currently Learning</h3>
+                <p>AI/ML in depth — working towards integrating intelligent features into products.</p>
+                <span class="edu-tag">Ongoing</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════ CONTACT ══════════════════ -->
+    <div class="contact-section" id="contact">
+        <div class="reveal">
+            <h2>Let's build<br>something <em>great</em></h2>
+            <p>Whether you need a Flutter app, a full-stack platform, or an AI-powered system — I ship production-grade
+                products, solo, end-to-end.</p>
+            <div class="contact-links">
+                <a href="mailto:muhammadmeesamgardezi@gmail.com" class="contact-link magnetic" data-strength="12">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="M22 7l-10 7L2 7" />
+                    </svg>
+                    Email Me
+                </a>
+                <a href="https://github.com/MeesamGardezi" target="_blank" class="contact-link magnetic"
+                    data-strength="12">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
+                    GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/meesamgardezi/" target="_blank" class="contact-link magnetic"
+                    data-strength="12">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path
+                            d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                    </svg>
+                    Website
+                </a>
+                <a href="tel:+923145879091" class="contact-link magnetic" data-strength="12">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                    </svg>
+                    Call
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ FOOTER ══════════════════ -->
+    <footer>
+        <p>&copy; 2026 Meesam Gardezi. Built with obsession.</p>
+        <div class="footer-links">
+            <a href="mailto:muhammadmeesamgardezi@gmail.com">Email</a>
+            <a href="https://github.com/MeesamGardezi" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/meesamgardezi/" target="_blank">LinkedIn</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
