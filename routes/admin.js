@@ -132,6 +132,7 @@ router.get('/posts/:id/edit', requireAuth, async (req, res) => {
         slug: data.slug || '',
         excerpt: data.excerpt || '',
         content: data.content || '',
+        contentType: data.contentType || 'markdown',
         coverImage: data.coverImage || '',
         tags: data.tags || [],
         published: data.published || false,
@@ -147,7 +148,7 @@ router.get('/posts/:id/edit', requireAuth, async (req, res) => {
 router.post('/posts', requireAuth, async (req, res) => {
   try {
     const { db } = require('../firebase-config');
-    const { title, slug, excerpt, content, coverImage, published, tags } = req.body;
+    const { title, slug, excerpt, content, contentType, coverImage, published, tags } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ error: 'Title and content are required' });
@@ -166,6 +167,7 @@ router.post('/posts', requireAuth, async (req, res) => {
       slug: finalSlug,
       excerpt: excerpt || '',
       content,
+      contentType: contentType || 'markdown',
       coverImage: coverImage || '',
       published: published || false,
       tags: tags || [],
@@ -186,7 +188,7 @@ router.post('/posts', requireAuth, async (req, res) => {
 router.put('/posts/:id', requireAuth, async (req, res) => {
   try {
     const { db } = require('../firebase-config');
-    const { title, slug, excerpt, content, coverImage, published, tags } = req.body;
+    const { title, slug, excerpt, content, contentType, coverImage, published, tags } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ error: 'Title and content are required' });
@@ -206,6 +208,7 @@ router.put('/posts/:id', requireAuth, async (req, res) => {
       slug: finalSlug,
       excerpt: excerpt || '',
       content,
+      contentType: contentType || 'markdown',
       coverImage: coverImage || '',
       published: published || false,
       tags: tags || [],

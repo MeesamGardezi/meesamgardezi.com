@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -81,13 +82,14 @@ app.get('/sitemap.xml', async (req, res) => {
     const { db } = require('./firebase-config');
     const postsSnap = await db.collection('posts')
       .where('published', '==', true)
-      .orderBy('createdAt', 'desc')
       .get();
 
-    const posts = postsSnap.docs.map(doc => ({
-      slug: doc.data().slug,
-      updatedAt: doc.data().updatedAt?.toDate() || doc.data().createdAt?.toDate() || new Date(),
-    }));
+    const posts = postsSnap.docs
+      .map(doc => ({
+        slug: doc.data().slug,
+        updatedAt: doc.data().updatedAt?.toDate() || doc.data().createdAt?.toDate() || new Date(),
+      }))
+      .sort((a, b) => b.updatedAt - a.updatedAt);
 
     res.set('Content-Type', 'application/xml');
     res.render('sitemap', {
@@ -120,5 +122,22 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
+// ── Daily auto-blog (runs every day at 08:00 server time) ──
+if (process.env.GEMINI_API_KEY) {
+  const { generateAndPublish } = require('./scripts/auto-blog');
+  // Schedule: minute=0, hour=8, every day
+  cron.schedule('0 8 * * *', async () => {
+    console.log('[cron] Running daily auto-blog generation...');
+    try {
+      await generateAndPublish();
+    } catch (err) {
+      console.error('[cron] Auto-blog failed:', err.message);
+    }
+  });
+  console.log('[cron] Daily auto-blog scheduled at 08:00.');
+} else {
+  console.warn('[cron] GEMINI_API_KEY not set — auto-blog scheduler disabled.');
+}
 
 module.exports = app;

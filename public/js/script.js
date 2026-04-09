@@ -49,210 +49,94 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
 })();
 
 /* ═══════════════════════════════════════════
-   THREE.JS 3D BACKGROUND — Floating Clay Shapes
-   Full-screen ambient 3D scene with soft matte
-   geometric objects drifting behind content
+   BACKGROUND — hex grid + large hexes + mouse glow
    ═══════════════════════════════════════════ */
-function init3DBackground() {
-    const canvas = document.getElementById('bg3DCanvas');
-    if (!canvas || typeof THREE === 'undefined') {
-        if (typeof THREE === 'undefined') {
-            if (document.readyState === 'complete') {
-                setTimeout(init3DBackground, 100);
-            } else {
-                window.addEventListener('load', init3DBackground);
-            }
-            return;
+(function initBackground() {
+    const canvas = document.getElementById('hexCanvas');
+    const ctx    = canvas ? canvas.getContext('2d') : null;
+    if (!canvas || !ctx) return;
+
+    const BASE_R   = 24;          // resting hex circumradius
+    const MAX_GROW = 10;          // max extra radius near cursor
+    const INFLUENCE = 120;        // px — cursor influence radius
+    const cW = BASE_R * Math.sqrt(3);
+    const rH = BASE_R * 1.5;
+
+    let W = window.innerWidth, H = window.innerHeight;
+    let mouseX = -9999, mouseY = -9999;
+
+    function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    // Pointy-top hex path
+    function hexPath(cx, cy, r) {
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const a = Math.PI / 180 * (60 * i - 30);
+            i === 0 ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
+                    : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
         }
-        return;
+        ctx.closePath();
     }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
-    camera.position.z = 30;
+    function frame() {
+        ctx.clearRect(0, 0, W, H);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
+        const cols = Math.ceil(W / cW) + 2;
+        const rows = Math.ceil(H / rH) + 2;
 
-    // ── Warm Clay Colors ──
-    const palette = [
-        0xe07a5f, // terracotta
-        0x7c6aef, // violet
-        0x81b29a, // sage
-        0xf2cc8f, // amber
-        0xf2a891, // light terracotta
-        0xa594f9, // light violet
-        0xadd4c0, // light sage
-        0xf5e0c3, // cream
-    ];
+        for (let row = -1; row < rows; row++) {
+            for (let col = -1; col < cols; col++) {
+                const cx = cW * col + (row & 1 ? cW / 2 : 0);
+                const cy = rH * row;
 
-    // ── Create floating shapes ──
-    const shapes = [];
-    const shapeCount = 18;
+                // Proximity factor: smoothstep falloff
+                const dist = Math.hypot(mouseX - cx, mouseY - cy);
+                const t = Math.max(0, 1 - dist / INFLUENCE);
+                const smooth = t * t * (3 - 2 * t); // smoothstep
 
-    const geometries = [
-        () => new THREE.IcosahedronGeometry(1, 0),
-        () => new THREE.OctahedronGeometry(1, 0),
-        () => new THREE.TorusGeometry(1, 0.4, 16, 32),
-        () => new THREE.TorusKnotGeometry(0.8, 0.3, 64, 16),
-        () => new THREE.SphereGeometry(1, 32, 32),
-        () => new THREE.DodecahedronGeometry(1, 0),
-        () => new THREE.CylinderGeometry(0.6, 0.6, 1.2, 6),
-        () => new THREE.BoxGeometry(1.2, 1.2, 1.2),
-    ];
+                const r = BASE_R - 1 + MAX_GROW * smooth;
+                const opacity = 0.055 + 0.30 * smooth;
 
-    for (let i = 0; i < shapeCount; i++) {
-        const geoFn = geometries[Math.floor(Math.random() * geometries.length)];
-        const geo = geoFn();
+                ctx.strokeStyle = smooth > 0.01
+                    ? `rgba(224,122,95,${opacity})`
+                    : 'rgba(0,0,0,0.055)';
+                ctx.lineWidth = 0.6 + smooth * 1.4;
 
-        const color = palette[Math.floor(Math.random() * palette.length)];
-        const isMatte = Math.random() > 0.3;
+                hexPath(cx, cy, r);
+                ctx.stroke();
+            }
+        }
 
-        const mat = new THREE.MeshPhysicalMaterial({
-            color: color,
-            roughness: isMatte ? 0.65 + Math.random() * 0.2 : 0.4 + Math.random() * 0.15,
-            metalness: 0.02,
-            transparent: true,
-            opacity: 0.45 + Math.random() * 0.35,
-            clearcoat: 0.15,
-            clearcoatRoughness: 0.6,
-            envMapIntensity: 0.3,
-            side: THREE.DoubleSide,
-        });
-
-        const mesh = new THREE.Mesh(geo, mat);
-
-        // Scatter across viewport — use spherical distribution for depth
-        const spread = 45;
-        const x = (Math.random() - 0.5) * spread;
-        const y = (Math.random() - 0.5) * spread * 0.7;
-        const z = (Math.random() - 0.5) * 30 - 5;
-
-        const scale = 0.4 + Math.random() * 1.8;
-        mesh.scale.set(scale, scale, scale);
-        mesh.position.set(x, y, z);
-        mesh.rotation.set(
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2,
-            Math.random() * Math.PI * 2
-        );
-
-        mesh.castShadow = true;
-
-        mesh.userData = {
-            baseX: x,
-            baseY: y,
-            baseZ: z,
-            rotSpeedX: (Math.random() - 0.5) * 0.008,
-            rotSpeedY: (Math.random() - 0.5) * 0.008,
-            rotSpeedZ: (Math.random() - 0.5) * 0.004,
-            floatPhase: Math.random() * Math.PI * 2,
-            floatSpeed: 0.15 + Math.random() * 0.3,
-            floatAmplitude: 0.3 + Math.random() * 0.8,
-            driftX: (Math.random() - 0.5) * 0.003,
-            driftY: (Math.random() - 0.5) * 0.002,
-            scale: scale,
-        };
-
-        shapes.push(mesh);
-        scene.add(mesh);
+        requestAnimationFrame(frame);
     }
+    requestAnimationFrame(frame);
 
-    // ── Lighting — soft, diffuse studio ──
-    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambient);
+    // ── Mouse glow ──
+    const glow = document.getElementById('bgMouseGlow');
+    if (!glow) return;
+    let glowX = W / 2, glowY = H / 2;
+    let curX = glowX, curY = glowY;
+    let glowVisible = false;
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    keyLight.position.set(10, 15, 20);
-    keyLight.castShadow = true;
-    scene.add(keyLight);
-
-    const fillLight = new THREE.DirectionalLight(0xe0f0ff, 0.4);
-    fillLight.position.set(-10, -5, 10);
-    scene.add(fillLight);
-
-    const warmAccent = new THREE.PointLight(0xe07a5f, 0.5, 60);
-    warmAccent.position.set(-15, 10, 5);
-    scene.add(warmAccent);
-
-    const violetAccent = new THREE.PointLight(0x7c6aef, 0.3, 60);
-    violetAccent.position.set(15, -10, 5);
-    scene.add(violetAccent);
-
-    const sageAccent = new THREE.PointLight(0x81b29a, 0.25, 60);
-    sageAccent.position.set(0, 15, -5);
-    scene.add(sageAccent);
-
-    // ── Mouse tracking for parallax ──
-    let mouseX = 0, mouseY = 0;
-    let targetMouseX = 0, targetMouseY = 0;
-
-    document.addEventListener('mousemove', (e) => {
-        targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-        targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    document.addEventListener('mousemove', e => {
+        glowX = e.clientX; glowY = e.clientY;
+        if (!glowVisible) { glow.style.opacity = '1'; glowVisible = true; }
     });
-
-    // ── Scroll parallax ──
-    let scrollY = 0;
-    window.addEventListener('scroll', () => {
-        scrollY = window.scrollY;
-    });
-
-    // ── Animation loop ──
-    function animate() {
-        requestAnimationFrame(animate);
-        const t = Date.now() * 0.001;
-
-        // Smooth mouse follow
-        mouseX += (targetMouseX - mouseX) * 0.03;
-        mouseY += (targetMouseY - mouseY) * 0.03;
-
-        // Camera reacts to mouse
-        camera.position.x += (mouseX * 2 - camera.position.x) * 0.02;
-        camera.position.y += (-mouseY * 1.5 - camera.position.y) * 0.02;
-        camera.lookAt(0, 0, 0);
-
-        // Scroll-based vertical offset
-        const scrollOffset = scrollY * 0.008;
-
-        shapes.forEach(shape => {
-            const d = shape.userData;
-
-            // Gentle rotation
-            shape.rotation.x += d.rotSpeedX;
-            shape.rotation.y += d.rotSpeedY;
-            shape.rotation.z += d.rotSpeedZ;
-
-            // Floating bob
-            const floatY = Math.sin(t * d.floatSpeed + d.floatPhase) * d.floatAmplitude;
-            const floatX = Math.cos(t * d.floatSpeed * 0.7 + d.floatPhase) * d.floatAmplitude * 0.4;
-
-            // Slow drift
-            shape.position.x = d.baseX + floatX + Math.sin(t * 0.05 + d.floatPhase) * 2;
-            shape.position.y = d.baseY + floatY - scrollOffset;
-            shape.position.z = d.baseZ + Math.sin(t * d.floatSpeed * 0.3 + d.floatPhase) * 0.5;
-
-            // Subtle scale breathing
-            const breathe = 1 + Math.sin(t * 0.4 + d.floatPhase) * 0.04;
-            const s = d.scale * breathe;
-            shape.scale.set(s, s, s);
-        });
-
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    // ── Resize ──
-    function onResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    window.addEventListener('resize', onResize);
-}
-init3DBackground();
+    document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; glowVisible = false; });
+    (function glowAnimate() {
+        curX += (glowX - curX) * 0.06;
+        curY += (glowY - curY) * 0.06;
+        glow.style.left = curX + 'px';
+        glow.style.top  = curY + 'px';
+        requestAnimationFrame(glowAnimate);
+    })();
+})();
 
 /* ═══════════════════════════════════════════
    PARTICLE SYSTEM
@@ -377,37 +261,41 @@ drawParticles();
 } // end particleCanvas else block
 
 /* ═══════════════════════════════════════════
-   CURSOR GLOW
+   CUSTOM CURSOR
    ═══════════════════════════════════════════ */
-const glow = document.getElementById('cursorGlow');
-if (glow) {
-    let glowVisible = false;
-    let glowX = 0, glowY = 0, currentGlowX = 0, currentGlowY = 0;
+(function initCursor() {
+    const label = document.getElementById('cursorLabel');
+    if (!label) return;
+    if (window.matchMedia('(hover: none)').matches) return;
+
+    let visible = false;
 
     document.addEventListener('mousemove', (e) => {
-        glowX = e.clientX;
-        glowY = e.clientY;
-        if (!glowVisible) {
-            glow.style.opacity = '1';
-            glowVisible = true;
+        label.style.left = e.clientX + 'px';
+        label.style.top  = e.clientY + 'px';
+        if (!visible) {
+            label.style.opacity = '1';
+            visible = true;
         }
     });
 
     document.addEventListener('mouseleave', () => {
-        glow.style.opacity = '0';
-        glowVisible = false;
+        label.style.opacity = '0';
+        visible = false;
     });
 
-    // Smooth glow follow
-    function updateGlow() {
-        currentGlowX += (glowX - currentGlowX) * 0.08;
-        currentGlowY += (glowY - currentGlowY) * 0.08;
-        glow.style.left = currentGlowX + 'px';
-        glow.style.top = currentGlowY + 'px';
-        requestAnimationFrame(updateGlow);
-    }
-    updateGlow();
-}
+    const hoverTargets = 'a, button, [role="button"], input, textarea, select, label, .magnetic, .project-card, .tilt-card';
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(hoverTargets)) {
+            document.body.classList.add('cursor-hover');
+        }
+    });
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(hoverTargets)) {
+            document.body.classList.remove('cursor-hover');
+        }
+    });
+})();
 
 /* ═══════════════════════════════════════════
    MOBILE NAV
